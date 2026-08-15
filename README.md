@@ -1,4 +1,4 @@
-# Bayshore_6RR (Almost Finish)
+# Bayshore_6RR
 A server implementation for Wangan Midnight Maximum Tune 6RR, based on Bayshore, written in TypeScript language. 
 
 Modified and edited by Pixel ~ Inphy for W6W10JPN05 support.
