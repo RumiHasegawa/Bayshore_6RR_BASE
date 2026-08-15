@@ -124,22 +124,26 @@ export async function saveGhostBattleResult(body: wm.protobuf.SaveGameResultRequ
                     carId: body.carId
                 },
                 select: {
-                    AcquiredBingoNumbers: true,
+                    acquiredBingoNumbers: true,
                 }
             });
 
             let NewBingoNumbers: any[] =
                 ghostResult.opponents && ghostResult.opponents.length > 0
-                    ? ghostResult.opponents.map(opponent => opponent.bingoNumber)
+                    ? ghostResult.opponents
+                        .filter(opponent => opponent.bingoNumber && opponent.bingoNumber > 0)
+                        .map(opponent => opponent.bingoNumber)
                     : [];
 
             // Combine both together
             let updatedacquiredBingoNumbers: any[];
 
             if (getBingoNumbersDB && Array.isArray(getBingoNumbersDB.acquiredBingoNumbers)) {
-                updatedacquiredBingoNumbers = getBingoNumbersDB.acquiredBingoNumbers.concat(NewBingoNumbers);
+                // Deduplicate bingo numbers array
+                let combined = getBingoNumbersDB.acquiredBingoNumbers.concat(NewBingoNumbers);
+                updatedacquiredBingoNumbers = Array.from(new Set(combined));
             } else {
-                updatedacquiredBingoNumbers = NewBingoNumbers;
+                updatedacquiredBingoNumbers = Array.from(new Set(NewBingoNumbers));
             }
 
             // Ghost update data
