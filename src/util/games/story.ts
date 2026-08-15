@@ -26,32 +26,29 @@ export async function saveStoryResult(body: wm.protobuf.SaveGameResultRequest, c
         {
             // Story update data
             let data : any = {
-                stClearDivCount: common.sanitizeInputNotZero(storyResult.stClearDivCount), 
+                stClearDivCount: common.sanitizeInput(storyResult.stClearDivCount), 
                 stPlayCount: common.sanitizeInput(storyResult.stPlayCount), 
-                stClearCount: common.sanitizeInputNotZero(storyResult.stClearCount), 
+                stClearCount: common.sanitizeInput(storyResult.stClearCount), 
                 stConsecutiveWins: common.sanitizeInput(storyResult.stConsecutiveWins), 
                 tuningPoints: common.sanitizeInput(storyResult.tuningPoint), 
                 stCompleted100Episodes: common.sanitizeInput(storyResult.stCompleted_100Episodes), 
             }
 
             // If the current consecutive wins is greater than the previous max
-            if (storyResult.stConsecutiveWins! > car.stConsecutiveWinsMax) 
+            if (storyResult.stConsecutiveWins !== null && storyResult.stConsecutiveWins !== undefined) 
             {
-                // Update the maximum consecutive wins;
-                data.stConsecutiveWinsMax = storyResult.stConsecutiveWins;
+                if (storyResult.stConsecutiveWins > (car?.stConsecutiveWinsMax || 0)) 
+                {
+                    // Update the maximum consecutive wins;
+                    data.stConsecutiveWinsMax = storyResult.stConsecutiveWins;
+                }
             }
 
-            // If the lose bits are set, and are long data
-            if (Long.isLong(storyResult.stLoseBits))
+            // Lose bits handling
+            if (storyResult.stLoseBits !== null && storyResult.stLoseBits !== undefined)
             {
-                // Convert them to BigInt and add to the data
                 data.stLoseBits = common.getBigIntFromLong(storyResult.stLoseBits);
-                if(data.stLoseBits > 0)
-                {
-                    stLoseBits = data.stLoseBits
-                }
-                
-                // If a loss has been recorded
+                stLoseBits = data.stLoseBits;
                 if (stLoseBits > 0)
                 {
                     // End the win streak
@@ -63,34 +60,27 @@ export async function saveStoryResult(body: wm.protobuf.SaveGameResultRequest, c
                 stLoseBits = 0;
             }
 
-            // Calling check step function (BASE_PATH/src/util/games/games_util/check_step.ts)
+            // Calling check step function
             let check_steps = await check_step.checkCurrentStep(body);
 
             // Set the ghost level to the correct level
             data.ghostLevel = check_steps.ghostLevel;
 
-            // Check if clearBits is not null, and not lose the story
-            if(storyResult.stClearBits !== null && storyResult.stClearBits !== undefined)
+            // Check if clearBits is set
+            if (storyResult.stClearBits !== null && storyResult.stClearBits !== undefined)
             {
-                if(stLoseBits === 0) 
-                {
-                    data.stClearBits = storyResult.stClearBits;
-                }
+                data.stClearBits = storyResult.stClearBits;
             }
 
+            console.log('Updating story data');
             
-            if(data.stClearCount || stLoseBits)
-            {
-                console.log('Updating story data');
-                
-                // Update the car properties
-                await prisma.car.update({
-                    where: {
-                        carId: body.carId
-                    },
-                    data: data
-                });
-            }
+            // Update the car properties
+            await prisma.car.update({
+                where: {
+                    carId: body.carId
+                },
+                data: data
+            });
         }
     }
 }
