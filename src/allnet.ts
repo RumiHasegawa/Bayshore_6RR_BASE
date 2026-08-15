@@ -1,11 +1,11 @@
 import bodyParser from "body-parser";
-import { Application } from "express";
+import express, { Application } from "express";
 import { prisma } from ".";
 import { unzipSync } from "zlib";
 import { Module } from "./module";
 import iconv from "iconv-lite";
 import { Config } from "./config";
-import * as common from "./modules/util/common";
+import * as common from "./util/common";
 
 const cors = require('cors');
 const fs = require('fs');
@@ -128,7 +128,7 @@ export default class AllnetModule extends Module {
 
         
         // -----------------------------WEBSITE-----------------------------
-        /*let website = Config.getConfig().website || 0;
+        let website = Config.getConfig().website || 0;
         if(website === 1)
         {
             // -------------------------------HTML STUFF-------------------------------
@@ -568,4 +568,4 @@ export default class AllnetModule extends Module {
             });
         }
     }
-}*/
+}
