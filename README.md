@@ -35,11 +35,9 @@ This repo is based on the original repo (https://github.com/ProjectAsakura/Baysh
 - Registered Car Region
 - Story Mode Saving
 - Terminal Bug Issues at times Was Fixed
+- Wangan Koshien Tournament Event (Maybe Already Added?)
+- Transfer from 5, 5DX, 5DX+, 6
  
- ## What are things that is not working 
- - Transfer from 5, 5DX, 5DX+, 6
- - Wangan Koshien Tournament Event (Not implemented yet)
-
 ## Credits
 This project is part of [Project Asakura](https://github.com/ProjectAsakura) 
 
