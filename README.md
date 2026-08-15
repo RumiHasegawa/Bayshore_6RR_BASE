@@ -1,4 +1,4 @@
-# Bayshore_6RR (Neo Alpha Built)
+# Bayshore_6RR (Almost Finish)
 A server implementation for Wangan Midnight Maximum Tune 6RR, based on Bayshore, written in TypeScript language. 
 
 Modified and edited by Pixel ~ Inphy for W6W10JPN05 support.
@@ -24,21 +24,21 @@ Some features will be not available while in game. To implement those missing ty
 This repo is based on the original repo (https://github.com/ProjectAsakura/Bayshore)
 
 
-## What are things that is currently working
+## What are things that is currently working By Me?
  - Same like 6 and 6R
  - Transfer from 6R
  - VSORG [Expedition] + Ghost Wanted 
  - Ghost Trophies Saving
- - Bingo Mode (Not fully implemented)
+ - Bingo Mode (Fixed)
  - Online Championship Match (OCM)
+ - Story Mode Saving
+- Registered Car Region
+- Story Mode Saving
+- Terminal Bug Issues at times Was Fixed
  
  ## What are things that is not working 
  - Transfer from 5, 5DX, 5DX+, 6
- - Bingo Rewards
  - Wangan Koshien Tournament Event (Not implemented yet)
- - Story Mode Saving
- - Registered Car Region will be shown as server default and not randomised (Bug on purpose)
- - Terminal Bug Issues at times
 
 ## Credits
 This project is part of [Project Asakura](https://github.com/ProjectAsakura) 
