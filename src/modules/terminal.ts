@@ -196,6 +196,8 @@ export default class TerminalModule extends Module {
 				queryLimit = Number(query.limit);
 			}
 
+			let searchName = typeof query.name === 'string' ? query.name : '';
+
 			// Check the last played place id
 			if(query.last_played_place_id)
 			{
@@ -227,21 +229,20 @@ export default class TerminalModule extends Module {
 				// Get all of the cars matching the query
 				cars = await prisma.car.findMany({
 					take: queryLimit, 
-					where: {
+					where: searchName ? {
 						OR:[
 							{
 								name: {
-									startsWith: String(query.name)
+									startsWith: searchName
 								}
 							},
 							{
 								name: {
-									endsWith: String(query.name)
+									endsWith: searchName
 								}
 							}
 						]
-						
-					},
+					} : {},
 					include:{
 						gtWing: true,
 						lastPlayedPlace: true
@@ -463,6 +464,10 @@ export default class TerminalModule extends Module {
 
 			// Get the target scratch sheet (subtract one for zero-index)
 			let scratchSheet = scratchSheets[Number(body.targetSheet)-1];
+			if (!scratchSheet) {
+				let msg = { error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS };
+				return common.sendResponse(wm.wm.protobuf.SaveScratchSheetResponse.encode(msg), res);
+			}
 
 			// Get all of the squares for the scratch sheet
 			let scratchSquares = await prisma.scratchSquare.findMany({
@@ -476,6 +481,10 @@ export default class TerminalModule extends Module {
 
 			// Get the target scratch square
 			let scratchSquare = scratchSquares[Number(body.targetSquare)];
+			if (!scratchSquare) {
+				let msg = { error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS };
+				return common.sendResponse(wm.wm.protobuf.SaveScratchSheetResponse.encode(msg), res);
+			}
 
 			// Get the item from the scratch square
 			let earnedItem = wm.wm.protobuf.UserItem.create({
@@ -555,56 +564,68 @@ export default class TerminalModule extends Module {
 
 		// Load Bingo Stats
 		app.post('/method/load_bingo_stats', async (req,res) => {
+			try {
+				let body = wm.wm.protobuf.LoadBingoStatsRequest.decode(req.body);
+				let user = await prisma.user.findFirst({
+					where: { id: body.userId },
+					include: { cars: true }
+				});
 
-			// Get the information from the request
-			let body = wm.wm.protobuf.LoadBingoStatsRequest.decode(req.body);
-
-			// Get user received number of items
-			let getReceivedNumOfItems = await prisma.user.findFirst({
-				where: {
-					id: body.userId
-				},
-				select: {
-					receivedNumOfItems: true
+				let acquiredNumbers: number[] = [];
+				if (user && user.cars && user.cars.length > 0) {
+					let activeCarId = (user.carOrder && user.carOrder.length > 0) ? user.carOrder[0] : user.cars[0].carId;
+					let activeCar = user.cars.find(c => c.carId === activeCarId) || user.cars[0];
+					acquiredNumbers = activeCar.acquiredBingoNumbers || [];
 				}
-			});
-			let unreceivedItems:boolean = true;
 
-			if(getReceivedNumOfItems?.receivedNumOfItems === 3)
-			{
-				unreceivedItems = false;
+				let unreceivedItems: boolean = (user?.receivedNumOfItems !== 3);
+
+				let msg = {
+					error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
+					acquiredBingoNumbers: acquiredNumbers,
+					receivedNumOfItems: user?.receivedNumOfItems || 0,
+					unreceivedItems: unreceivedItems
+				};
+
+				let message = wm.wm.protobuf.LoadBingoStatsResponse.encode(msg);
+				common.sendResponse(message, res);
+			} catch (e) {
+				console.error("Error in load_bingo_stats:", e);
+				let msg = { error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS };
+				common.sendResponse(wm.wm.protobuf.LoadBingoStatsResponse.encode(msg), res);
 			}
-
-			let msg = {
-				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
-				acquiredBingoNumbers: [],
-				receivedNumOfItems: 0,
-				unreceivedItems: false
-			}
-
-			// Encode the response
-			let message = wm.wm.protobuf.LoadBingoStatsResponse.encode(msg);
-
-			// Send the response to the client
-            common.sendResponse(message, res);
 		})
 
 		// Bingo Receivable Items
 		app.post('/method/bingo_receivable_items', async (req, res) => {
+			try {
+				let body = wm.wm.protobuf.BingoReceivableItemsRequest.decode(req.body);
+				let userItems = await prisma.userItem.findMany({
+					where: {
+						userId: body.userId,
+						type: 0
+					}
+				});
 
-			// Get Bingo Receivable Items Request
-			let body = wm.wm.protobuf.BingoReceivableItemsRequest.decode(req.body);
+				let ownedUserItems = userItems.map(item => wm.wm.protobuf.UserItem.create({
+					userItemId: item.userItemId,
+					category: item.category,
+					itemId: item.itemId,
+					earnedAt: item.earnedAt
+				}));
 
-			let msg = {
-				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
-				ownedUserItems: []
+				let msg = {
+					error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
+					ownedUserItems: ownedUserItems
+				};
+
+				let message = wm.wm.protobuf.BingoReceivableItemsResponse.encode(msg);
+				common.sendResponse(message, res);
+			} catch (e) {
+				console.error("Error in bingo_receivable_items:", e);
+				let msg = { error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS, ownedUserItems: [] };
+				common.sendResponse(wm.wm.protobuf.BingoReceivableItemsResponse.encode(msg), res);
 			}
-
-			// Encode the response
-			let message = wm.wm.protobuf.BingoReceivableItemsResponse.encode(msg);
-
-			// Send the response to the client
-            common.sendResponse(message, res);
 		})
 
 		// Terminal OCM Ranking
