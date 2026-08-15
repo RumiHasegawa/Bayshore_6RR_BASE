@@ -24,7 +24,7 @@ Some features will be not available while in game. To implement those missing ty
 This repo is based on the original repo (https://github.com/ProjectAsakura/Bayshore)
 
 
-## What are things that is currently working By Me?
+## What are things that is currently working Fixed By Me?
  - Same like 6 and 6R
  - Transfer from 6R
  - VSORG [Expedition] + Ghost Wanted 
