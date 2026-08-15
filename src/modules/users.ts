@@ -5,7 +5,6 @@ import { prisma } from "..";
 
 // Import Proto
 import * as wm from "../wmmt/wm.proto";
-import * as wmsrv from "../wmmt/wmsrv.proto";
 
 // Import Util
 import * as scratch from "../util/scratch";
@@ -1300,7 +1299,6 @@ export default class UserModule extends Module {
 		})
 
 
-		/*
 		// Start Transfer
 		app.post('/method/start_transfer', (req, res) => {
 
@@ -1309,11 +1307,12 @@ export default class UserModule extends Module {
 
 			// Response data
 			let msg = {
-				error: wmsrv.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				userId: 0
 			};
 
 			// Encode the response
-			let message = wmsrv.wm.protobuf.StartTransferResponse.encode(msg);
+			let message = wm.wm.protobuf.StartTransferResponse.encode(msg);
 
 			// Send the response to the client
 			common.sendResponse(message, res);
@@ -1328,11 +1327,11 @@ export default class UserModule extends Module {
 
 			// Response data
 			let msg = {
-				error: wmsrv.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
 			};
 
 			// Encode the response
-			let message = wmsrv.wm.protobuf.GrantCarRightResponse.encode(msg);
+			let message = wm.wm.protobuf.GrantCarRightResponse.encode(msg);
 
 			// Send the response to the client
 			common.sendResponse(message, res);
@@ -1347,11 +1346,12 @@ export default class UserModule extends Module {
 
 			// Response data
 			let msg = {
-				error: wmsrv.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				accessCode: ""
 			};
 
 			// Encode the response
-			let message = wmsrv.wm.protobuf.AskAccessCodeResponse.encode(msg);
+			let message = wm.wm.protobuf.AskAccessCodeResponse.encode(msg);
 
 			// Send the response to the client
 			common.sendResponse(message, res);
@@ -1366,11 +1366,11 @@ export default class UserModule extends Module {
 
 			// Response data
 			let msg = {
-				error: wmsrv.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
 			};
 
 			// Encode the response
-			let message = wmsrv.wm.protobuf.ParticipateInInviteFriendCampaignResponse.encode(msg);
+			let message = wm.wm.protobuf.ParticipateInInviteFriendCampaignResponse.encode(msg);
 
 			// Send the response to the client
 			common.sendResponse(message, res);
@@ -1384,15 +1384,14 @@ export default class UserModule extends Module {
 
 			// Response data
 			let msg = {
-				error: wmsrv.wm.protobuf.ErrorCode.ERR_SUCCESS,
+				error: wm.wm.protobuf.ErrorCode.ERR_SUCCESS,
 			};
 
 			// Encode the response
-			let message = wmsrv.wm.protobuf.ConsumeUserItemResponse.encode(msg);
+			let message = wm.wm.protobuf.ConsumeUserItemResponse.encode(msg);
 
 			// Send the response to the client
 			common.sendResponse(message, res);
 		})
-		*/
 	}
 }
