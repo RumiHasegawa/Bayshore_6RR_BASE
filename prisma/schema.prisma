@@ -126,7 +126,9 @@ model Car {
     rgRegionMapScore   Int[]
     stampSheetCount    Int     @default(0)
     stampSheet         Int[]
-    acquiredBingoNumbers Int []  @default([0])
+
+    // Koshien
+    koshienParticipants KoshienParticipant[]
 	
     // Dress Up
     dressupLevel Int @default(0)
@@ -504,4 +506,34 @@ model FileList {
     notBefore   Int
     notAfter    Int
     filePath    String
+}
+
+model KoshienEvent {
+    id              Int    @id @default(autoincrement())
+    koshienId       Int    @unique
+    startAt         Int
+    endAt           Int
+    rewardEndAt     Int
+    title           String
+    status          Int    @default(0)
+}
+
+model KoshienParticipant {
+    id              Int    @id @default(autoincrement())
+    car             Car    @relation(fields: [carId], references: [carId])
+    carId           Int
+    koshienId       Int
+    state           Int    @default(0)
+    score           Int    @default(0)
+    rank            Int    @default(0)
+    shopId          Int    @default(0)
+}
+
+model KoshienShop {
+    id              Int    @id @default(autoincrement())
+    koshienId       Int
+    shopId          Int
+    shopName        String
+    score           Int    @default(0)
+    rank            Int    @default(0)
 }
