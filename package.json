@@ -8,6 +8,7 @@
   "license": "GNU Affero General Public License v3.0",
   "private": false,
   "scripts": {
+    "build": "tsc",
     "dev": "tsc && node dist && pause",
     "build_protos": "tsc -p ./tsconfig.proto.json",
     "install_pm2": "i pm2 --save-dev && pm2 start ./dist/index.js --name 6RR -i max --update-env"
