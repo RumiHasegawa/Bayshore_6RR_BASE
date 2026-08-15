@@ -22,25 +22,26 @@ export function sendResponse(message: Writer, res: Response)
 }
 
 
-// getBigIntFromLong(n: Long): BigInt
+// getBigIntFromLong(n: any): number
 // Given a Long data object, converts 
-// it into a BigInt and returns it.
-export function getBigIntFromLong(n: Long)
+// it into a number/BigInt representation safely.
+export function getBigIntFromLong(n: any): number
 {
-    // Create the default value
-    let bigInt = BigInt(0);
-
-    // If 'n' is a long data type
-    if (n instanceof Long) 
-    {
-        // Perform the  bit-wise operations
-        bigInt = bigInt | BigInt(n.high);
-        bigInt = bigInt << BigInt(32);
-        bigInt = bigInt | BigInt(n.low);
+    if (n === null || n === undefined) return 0;
+    if (typeof n === 'number') return n;
+    if (typeof n === 'bigint') return Number(n);
+    if (typeof n === 'string') return Number(BigInt(n));
+    if (n && typeof n.toString === 'function') {
+        try {
+            return Number(BigInt(n.toString()));
+        } catch (e) {}
     }
-
-    // Return the finished value
-    return Number(bigInt);
+    if (n && typeof n.high === 'number' && typeof n.low === 'number') {
+        const high = BigInt(n.high >>> 0);
+        const low = BigInt(n.low >>> 0);
+        return Number((high << 32n) | low);
+    }
+    return 0;
 }
 
 
